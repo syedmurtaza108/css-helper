@@ -73,6 +73,7 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/synonym_back"
                     android:padding="8dp"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textAppearance="?attr/textAppearanceHeadline6" />
 
                 <TextView
@@ -80,6 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:textColor="@color/white"
                     android:textAppearance="?attr/textAppearanceBody2" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

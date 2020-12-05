@@ -42,7 +42,10 @@ class NoteDetailFragment : Fragment() {
             Toast.makeText(context, "Point save to clipboard.", Toast.LENGTH_SHORT).show()
         })
 
-        pointAdapter.submitList(note?.points?.toList())
+        var count = 1
+        pointAdapter.submitList(note?.points?.map { point ->
+            return@map point.copy(no = count++, content = point.content)
+        })
 
         binding.pointsList.apply {
             layoutManager = LinearLayoutManager(requireContext())

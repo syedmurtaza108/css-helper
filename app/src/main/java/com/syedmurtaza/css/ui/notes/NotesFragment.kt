@@ -46,6 +46,7 @@ class NotesFragment : Fragment() {
         val bundle = requireArguments()
         val subject = bundle.getParcelable<Subject>(KEY_SUBJECT_BUNDLE)
         viewModel.getNotes(subject?.id!!)
+
         binding.idTextView.text = "#" + subject.id
         binding.subjectNameView.text = subject.name
 

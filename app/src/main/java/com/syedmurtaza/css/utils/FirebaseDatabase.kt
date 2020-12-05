@@ -189,6 +189,28 @@ class FirebaseDatabase {
         }
     }
 
+    fun flowAllNotes(): Flow<List<NoteResponse>> {
+        return callbackFlow {
+            var tempList = listOf<NoteResponse>()
+            db.collection(PATH_NOTE_STRING)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.e("Firestore Error", e.message.toString())
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        tempList = snapshot.toObjects()
+                    }
+                    launch {
+                        this@callbackFlow.send(tempList)
+                    }
+                }
+            awaitClose {
+                close()
+            }
+        }
+    }
+
     companion object {
         const val PATH_SUBJECT_STRING = "subjects"
         const val PATH_VOCABULARY_STRING = "vocabulary"
