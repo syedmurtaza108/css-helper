@@ -2,8 +2,7 @@ package com.syedmurtaza.css.ui.subject
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.syedmurtaza.css.models.Subject
-import com.syedmurtaza.css.models.toSubject
+import com.syedmurtaza.css.models.*
 import com.syedmurtaza.css.utils.FirebaseDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -14,11 +13,14 @@ class SubjectsViewModel(private val firebaseDatabase: FirebaseDatabase) : ViewMo
 
     private val _subjects = MutableStateFlow<List<Subject>>(listOf())
     val subjects = _subjects.asStateFlow()
+    private val _notes = MutableStateFlow<List<NoteResponse>>(listOf())
+    val notes = _notes.asStateFlow()
     private val _isRefresh = MutableSharedFlow<Boolean>()
     val isRefresh = _isRefresh.asSharedFlow()
 
     init {
         reload()
+        getNotes()
     }
 
     fun reload() {
@@ -28,6 +30,14 @@ class SubjectsViewModel(private val firebaseDatabase: FirebaseDatabase) : ViewMo
                     return@map response.toSubject()
                 }
                 _isRefresh.emit(false)
+            }
+        }
+    }
+
+    private fun getNotes(){
+        viewModelScope.launch {
+            firebaseDatabase.flowAllNotes().collect {
+                _notes.value = it
             }
         }
     }

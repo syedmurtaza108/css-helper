@@ -15,5 +15,7 @@
 
         <item name="colorSurface">@color/dark_blue_dark</item>
         <item name="colorOnSurface">@color/blue_shade</item>
+
+        <item name="android:windowContentTransitions">true</item>
     </style>
 </resources>

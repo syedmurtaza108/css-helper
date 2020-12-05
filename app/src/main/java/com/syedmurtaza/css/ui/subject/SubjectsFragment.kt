@@ -34,23 +34,24 @@ class SubjectsFragment : Fragment() {
     private lateinit var binding: FragmentSubjectsBinding
     private var isEdit = false
     private val viewModel: SubjectsViewModel by viewModel()
+    private var sharedPreferences: SharedPreferences? = null
+    private var isDark = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentSubjectsBinding.inflate(inflater, container, false)
+        sharedPreferences = activity?.getSharedPreferences(
+            "ThemePref",
+            Context.MODE_PRIVATE
+        )
+        initTheme(sharedPreferences)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val sharedPreferences = activity?.getSharedPreferences(
-            "ThemePref",
-            Context.MODE_PRIVATE
-        )
-        initTheme(sharedPreferences)
 
         binding.appBar.setOnMenuItemClickListener { menu ->
             if (menu.itemId == R.id.change_theme_btn) {
@@ -58,16 +59,19 @@ class SubjectsFragment : Fragment() {
             }
             return@setOnMenuItemClickListener true
         }
-        val subjectsAdapter = SubjectsAdapter({
-            findNavController().navigate(R.id.action_homeFragment_to_notesFragment,
-                bundleOf(NotesFragment.KEY_SUBJECT_BUNDLE to it))
-        }, {
-            val subjectBottomSheet = SubjectBottomSheet()
-            subjectBottomSheet.arguments = bundleOf(SubjectBottomSheet.KEY_ARG_BUNDLE to it)
-            subjectBottomSheet.show(parentFragmentManager, "")
-            isEdit = true
-            return@SubjectsAdapter true
-        })
+        val subjectsAdapter = SubjectsAdapter(
+            notes = viewModel.notes,
+            clickListener = {
+                findNavController().navigate(R.id.action_homeFragment_to_notesFragment,
+                    bundleOf(NotesFragment.KEY_SUBJECT_BUNDLE to it))
+            },
+            longClickListener = {
+                val subjectBottomSheet = SubjectBottomSheet()
+                subjectBottomSheet.arguments = bundleOf(SubjectBottomSheet.KEY_ARG_BUNDLE to it)
+                subjectBottomSheet.show(parentFragmentManager, "")
+                isEdit = true
+                return@SubjectsAdapter true
+            })
 
         binding.subjectsList.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -145,16 +149,14 @@ class SubjectsFragment : Fragment() {
     private fun checkTheme(
         sharedPreferences: SharedPreferences?,
     ) {
-        val theme = sharedPreferences?.getString(STRING_THEME, "light")
-        Toast.makeText(context, theme, Toast.LENGTH_SHORT).show()
-        if (theme != "light") {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        if (isDark) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             (activity as AppCompatActivity).delegate.applyDayNight()
             sharedPreferences?.edit()?.putString(STRING_THEME, "light")?.apply()
         } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             (activity as AppCompatActivity).delegate.applyDayNight()
-            sharedPreferences.edit()?.putString(STRING_THEME, "dark")?.apply()
+            sharedPreferences?.edit()?.putString(STRING_THEME, "dark")?.apply()
         }
     }
 
@@ -162,8 +164,8 @@ class SubjectsFragment : Fragment() {
         sharedPreferences: SharedPreferences?,
     ) {
         val theme = sharedPreferences?.getString(STRING_THEME, "light")
-        Toast.makeText(context, "theme "+ theme, Toast.LENGTH_SHORT).show()
-        if (theme != "light") {
+        isDark = theme == "dark"
+        if (isDark) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             (activity as AppCompatActivity).delegate.applyDayNight()
         } else {
