@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "247521097396",
+    "firebase_url": "https://css-back.firebaseio.com",
+    "project_id": "css-back",
+    "storage_bucket": "css-back.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247521097396:android:bf661034f81c62800089e1",
+        "android_client_info": {
+          "package_name": "com.syedmurtaza.css"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247521097396-tg06mbc2e0kp571qlmphed7rns3j2t22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkaymJ3sHha0DVm756f2JEDYaK7b1-xFk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247521097396-tg06mbc2e0kp571qlmphed7rns3j2t22.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

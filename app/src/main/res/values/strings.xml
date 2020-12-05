@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">CSS HELPER</string>
+    <string name="subject">SUBJECTS</string>
+    <string name="vocabulary">VOCABULARY</string>
+    <string name="note_detail">NOTE DETAIL</string>
+    <string name="home_fragment_desc">All your subjects are here</string>
+    <string name="note_detail_fragment_desc">Points of the note are here</string>
+    <string name="voc_frag_desc">All your vocabs are here</string>
+
+    <string name="subject_card_transition_name">subject_card_%1$s</string>
+    <string name="subject_card_detail_transition_name">subject_card_detail</string>
+    <string name="new_subject_title">Add a new subject</string>
+    <string name="add_button">ADD</string>
+    <string name="subject_edit_text_hint">Subject Name</string>
+    <string name="bottom_navigation_menu1">SUBJECTS</string>
+    <string name="bottom_navigation_menu2">VOCABULARY</string>
+    <string name="new_vocabulary_title">Add a new word</string>
+    <string name="word_hint">Word</string>
+    <string name="meaning_hint">Meaning</string>
+    <string name="synonym_hint">Synonym</string>
+    <string name="ex_hint">Example</string>
+    <string name="search_hint">Search vocabulary</string>
+    <string name="notes_title">Notes of the subject are here</string>
+    <string name="notes_appbar_title">NOTES</string>
+    <string name="notes_subjects_list_title">Other subjects are here</string>
+    <string name="search_title">Search</string>
+    <string name="add_note_menu">Add</string>
+    <string name="change_theme">Change Theme</string>
+    <string name="topic_hint">Topic</string>
+    <string name="cancel_button">CANCEL</string>
+    <string name="point_hint">Enter your points one by one here</string>
+    <string name="no_point_title">Points will appear here when you add them</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
