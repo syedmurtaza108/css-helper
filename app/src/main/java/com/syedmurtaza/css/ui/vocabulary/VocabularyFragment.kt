@@ -2,8 +2,9 @@ package com.syedmurtaza.css.ui.vocabulary
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.syedmurtaza.css.R
 import com.syedmurtaza.css.databinding.FragmentVocabularyBinding
-import com.syedmurtaza.css.models.Subject
 import com.syedmurtaza.css.models.Vocabulary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -43,14 +42,19 @@ class VocabularyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val vocabularyAdapter = VocabularyAdapter {
+        
+        val vocabularyAdapter = VocabularyAdapter({
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data =
+                Uri.parse("https://translate.google.com.pk/?sl=en&tl=ur&text=${it.word}&op=translate")
+            startActivity(intent)
+        }, {
             val vocabularyBottomSheet = VocabularyBottomSheet()
             vocabularyBottomSheet.arguments = bundleOf(VocabularyBottomSheet.KEY_ARG_BUNDLE to it)
             vocabularyBottomSheet.show(parentFragmentManager, "")
             isEdit = true
             return@VocabularyAdapter true
-        }
+        })
 
         binding.vocabList.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -141,14 +145,21 @@ class VocabularyFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.vocabulary.collect {
                 val tempList = it.toMutableList()
-                tempList.add(Vocabulary("", "","", "", ""))
+                tempList.add(Vocabulary("", "", "", "", ""))
                 vocabularyAdapter.submitList(tempList.toList())
+                binding.totalWordsCount.text = it.count().toString() + " words in database"
+                binding.appearingWordsCount.text =
+                    it.count().toString() + " words in current list"
             }
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.searchedVocabulary.collect {
-                vocabularyAdapter.submitList(it)
+                val tempList = it.toMutableList()
+                tempList.add(Vocabulary("", "", "", "", ""))
+                vocabularyAdapter.submitList(tempList.toList())
+                binding.appearingWordsCount.text =
+                    it.count().toString() + " words in current list"
             }
         }
 
