@@ -1,5 +1,6 @@
 package com.syedmurtaza.css
 
+import com.syedmurtaza.css.ui.notes.NoteDetailViewModel
 import com.syedmurtaza.css.ui.notes.NotesViewModel
 import com.syedmurtaza.css.utils.FirebaseDatabase
 import com.syedmurtaza.css.ui.subject.SubjectsViewModel
@@ -24,6 +25,9 @@ val module = module {
     }
     viewModel {
         NotesViewModel(get())
+    }
+    viewModel {
+        NoteDetailViewModel(get())
     }
     single {
         FirebaseDatabase()

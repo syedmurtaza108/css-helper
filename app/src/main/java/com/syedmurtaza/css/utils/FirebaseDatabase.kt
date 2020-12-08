@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 @ExperimentalCoroutinesApi
@@ -17,18 +18,22 @@ class FirebaseDatabase {
     private val db = Firebase.firestore
 
     fun addSubject(subject: Subject, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_SUBJECT_STRING).add(subject).addOnCompleteListener {
-            val response = it.result
-            response?.set(subject.copy(id = response.id))?.addOnCompleteListener { complete ->
-                onResult.invoke(complete.isSuccessful && complete.isComplete)
+        db.collection(PATH_SUBJECT_STRING)
+            .add(subject).addOnCompleteListener {
+                val response = it.result
+                response?.set(subject.copy(id = response.id,
+                    name = subject.name.toUpperCase(Locale.ROOT)))
+                    ?.addOnCompleteListener { complete ->
+                        onResult.invoke(complete.isSuccessful && complete.isComplete)
+                    }
             }
-        }
     }
 
     fun updateSubject(subject: Subject, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_SUBJECT_STRING).document(subject.id).set(subject).addOnCompleteListener {
-            onResult.invoke(it.isSuccessful && it.isComplete)
-        }
+        db.collection(PATH_SUBJECT_STRING).document(subject.id)
+            .set(subject.copy(name = subject.name.toUpperCase(Locale.ROOT))).addOnCompleteListener {
+                onResult.invoke(it.isSuccessful && it.isComplete)
+            }
     }
 
     fun deleteSubject(id: String, onResult: (Boolean) -> Unit) {
@@ -38,16 +43,20 @@ class FirebaseDatabase {
     }
 
     fun addVocabulary(vocabulary: Vocabulary, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_VOCABULARY_STRING).add(vocabulary).addOnCompleteListener {
-            val response = it.result
-            response?.set(vocabulary.copy(id = response.id))?.addOnCompleteListener { complete ->
-                onResult.invoke(complete.isSuccessful && complete.isComplete)
+        db.collection(PATH_VOCABULARY_STRING)
+            .add(vocabulary).addOnCompleteListener {
+                val response = it.result
+                response?.set(vocabulary.copy(id = response.id,
+                    word = vocabulary.word.toUpperCase(Locale.ROOT)))
+                    ?.addOnCompleteListener { complete ->
+                        onResult.invoke(complete.isSuccessful && complete.isComplete)
+                    }
             }
-        }
     }
 
     fun updateVocabulary(vocabulary: Vocabulary, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_VOCABULARY_STRING).document(vocabulary.id).set(vocabulary)
+        db.collection(PATH_VOCABULARY_STRING).document(vocabulary.id)
+            .set(vocabulary.copy(word = vocabulary.word.toUpperCase(Locale.ROOT)))
             .addOnCompleteListener {
                 onResult.invoke(it.isSuccessful && it.isComplete)
             }
@@ -62,8 +71,8 @@ class FirebaseDatabase {
     fun searchVocabulary(word: String): Flow<List<VocabularyResponse>> {
         return callbackFlow {
             db.collection(PATH_VOCABULARY_STRING)
-                .whereGreaterThanOrEqualTo(PROPERTY_WORD_STRING, word)
-                .whereLessThanOrEqualTo(PROPERTY_WORD_STRING, word + "\uF7FF")
+                .whereGreaterThanOrEqualTo(PROPERTY_WORD_STRING, word.toUpperCase(Locale.ROOT))
+                .whereLessThanOrEqualTo(PROPERTY_WORD_STRING, word.toUpperCase(Locale.ROOT) + "\uF7FF")
                 .get()
                 .addOnCompleteListener { wordTask ->
                     if (wordTask.isSuccessful) {
@@ -81,16 +90,20 @@ class FirebaseDatabase {
     }
 
     fun addNote(note: Note, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_NOTE_STRING).add(note).addOnCompleteListener {
-            val response = it.result
-            response?.set(note.copy(id = response.id))?.addOnCompleteListener { complete ->
-                onResult.invoke(complete.isSuccessful && complete.isComplete)
+        db.collection(PATH_NOTE_STRING).add(note)
+            .addOnCompleteListener {
+                val response = it.result
+                response?.set(note.copy(topic = note.topic.toUpperCase(Locale.ROOT),
+                    id = response.id))?.addOnCompleteListener { complete ->
+                    onResult.invoke(complete.isSuccessful && complete.isComplete)
+                }
             }
-        }
     }
 
     fun updateNote(note: Note, onResult: (Boolean) -> Unit) {
-        db.collection(PATH_NOTE_STRING).document(note.id).set(note)
+        db.collection(PATH_NOTE_STRING).document(note.id)
+            .set(note.copy(topic = note.topic.toUpperCase(
+                Locale.ROOT)))
             .addOnCompleteListener {
                 onResult.invoke(it.isSuccessful && it.isComplete)
             }
@@ -126,6 +139,7 @@ class FirebaseDatabase {
     val flowSubject = callbackFlow {
         var tempList = listOf<SubjectResponse>()
         db.collection(PATH_SUBJECT_STRING)
+            .orderBy(PROPERTY_NAME_STRING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.e("Firestore Error", e.message.toString())
@@ -147,6 +161,7 @@ class FirebaseDatabase {
     val flowVocabulary = callbackFlow {
         var tempList = listOf<VocabularyResponse>()
         db.collection(PATH_VOCABULARY_STRING)
+            .orderBy(PROPERTY_WORD_STRING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.e("Firestore Error", e.message.toString())
@@ -189,6 +204,30 @@ class FirebaseDatabase {
         }
     }
 
+    fun flowSelectedNote(noteId: String): Flow<NoteResponse> {
+        return callbackFlow {
+            var tempList = NoteResponse()
+            db.collection(PATH_NOTE_STRING)
+                .whereEqualTo(PROPERTY_NOTE_ID_STRING, noteId)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.e("Firestore Error", e.message.toString())
+                        return@addSnapshotListener
+                    }
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        tempList = snapshot.toObjects(NoteResponse::class.java)[0]
+                    }
+                    launch {
+                        this@callbackFlow.send(tempList)
+                    }
+
+                }
+            awaitClose {
+                close()
+            }
+        }
+    }
+
     fun flowAllNotes(): Flow<List<NoteResponse>> {
         return callbackFlow {
             var tempList = listOf<NoteResponse>()
@@ -216,7 +255,9 @@ class FirebaseDatabase {
         const val PATH_VOCABULARY_STRING = "vocabulary"
         const val PATH_NOTE_STRING = "notes"
         const val PROPERTY_WORD_STRING = "word"
+        const val PROPERTY_NAME_STRING = "name"
         const val PROPERTY_TOPIC_STRING = "topic"
         const val PROPERTY_SUBJECT_ID_STRING = "subjectId"
+        const val PROPERTY_NOTE_ID_STRING = "id"
     }
 }

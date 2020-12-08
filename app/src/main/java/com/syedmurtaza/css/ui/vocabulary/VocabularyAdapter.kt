@@ -11,15 +11,18 @@ import com.syedmurtaza.css.databinding.VocabularyItemBinding
 import com.syedmurtaza.css.models.Vocabulary
 
 class VocabularyAdapter(
+    private val googleBtnClickList: (vocabulary: Vocabulary) -> Unit,
     private val longClickListener: (vocabulary: Vocabulary) -> Boolean,
 ) :
     ListAdapter<Vocabulary, RecyclerView.ViewHolder>(VocabularyCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == R.layout.vocabulary_item) VocabularyViewHolder(VocabularyItemBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false), longClickListener) else
+        return if (viewType == R.layout.vocabulary_item) VocabularyViewHolder(googleBtnClickList,
+            VocabularyItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false),
+            longClickListener) else
             SpacerViewHolder(SpacerItemBinding.inflate(LayoutInflater.from(parent.context),
                 parent,
                 false))
@@ -30,13 +33,14 @@ class VocabularyAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder is VocabularyViewHolder){
+        if (holder is VocabularyViewHolder) {
             holder.vocabulary = getItem(position)
             holder.bind()
         }
     }
 
     class VocabularyViewHolder(
+        private val googleBtnClickList: (vocabulary: Vocabulary) -> Unit,
         private val binding: VocabularyItemBinding,
         private val longClickListener: (vocabulary: Vocabulary) -> Boolean,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -50,6 +54,9 @@ class VocabularyAdapter(
             binding.exampleTextView.text = vocabulary?.example
             binding.root.setOnLongClickListener {
                 longClickListener.invoke(vocabulary!!)
+            }
+            binding.googleBtn.setOnClickListener {
+                googleBtnClickList.invoke(vocabulary!!)
             }
         }
     }

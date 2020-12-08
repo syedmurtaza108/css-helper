@@ -1,11 +1,14 @@
 package com.syedmurtaza.css.ui
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
@@ -14,6 +17,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.transition.MaterialElevationScale
 import com.syedmurtaza.css.R
 import com.syedmurtaza.css.databinding.FragmentHomeBinding
+import com.syedmurtaza.css.models.Note
+import com.syedmurtaza.css.ui.notes.NotesAdapter
 import com.syedmurtaza.css.ui.subject.SubjectBottomSheet
 import com.syedmurtaza.css.ui.subject.SubjectsFragment
 import com.syedmurtaza.css.ui.vocabulary.VocabularyBottomSheet
@@ -80,6 +85,6 @@ class HomeFragment : Fragment() {
             }
             return@setOnNavigationItemSelectedListener true
         }
-    }
 
+    }
 }

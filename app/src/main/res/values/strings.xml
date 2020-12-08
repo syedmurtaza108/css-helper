@@ -19,7 +19,7 @@
     <string name="meaning_hint">Meaning</string>
     <string name="synonym_hint">Synonym</string>
     <string name="ex_hint">Example</string>
-    <string name="search_hint">Search vocabulary</string>
+    <string name="search_hint">Search vocabulary by word</string>
     <string name="notes_title">Notes of the subject are here</string>
     <string name="notes_appbar_title">NOTES</string>
     <string name="notes_subjects_list_title">Other subjects are here</string>
@@ -32,4 +32,8 @@
     <string name="no_point_title">Points will appear here when you add them</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edit_title">EDIT</string>
+    <string name="delete_title">DELETE</string>
+    <string name="google_text">GOOGLE IT</string>
+    <string name="filter_text">FILTER VOCABULARY</string>
 </resources>

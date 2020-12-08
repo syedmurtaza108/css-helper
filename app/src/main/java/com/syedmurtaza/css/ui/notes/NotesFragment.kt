@@ -32,6 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class NotesFragment : Fragment() {
     private lateinit var binding: FragmentNotesBinding
     private val viewModel: NotesViewModel by viewModel()
+    private lateinit var notesAdapter: NotesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,7 +61,7 @@ class NotesFragment : Fragment() {
             scrimColor = Color.TRANSPARENT
         }
 
-        val notesAdapter = NotesAdapter({
+        notesAdapter = NotesAdapter({
             findNavController().navigate(R.id.action_notesFragment_to_noteDetailFragment,
                 bundleOf(NoteDialogFragment.KEY_NOTE_CURRENT to it))
         }, {
@@ -208,6 +209,7 @@ class NotesFragment : Fragment() {
             }
             builder.create()
         }
+
     }
 
     companion object {

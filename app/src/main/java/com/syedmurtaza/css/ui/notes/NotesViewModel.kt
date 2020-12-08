@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 class NotesViewModel(private val firebaseDatabase: FirebaseDatabase) : ViewModel() {
 
-    private val _notes = MutableStateFlow<List<Note>>(listOf())
-    val notes = _notes.asStateFlow()
+    private val _notes = MutableSharedFlow<List<Note>>()
+    val notes = _notes.asSharedFlow()
     private val _subjects = MutableStateFlow<List<Subject>>(listOf())
     val subjects = _subjects.asStateFlow()
     private val _searchedNotes = MutableStateFlow<List<Note>>(listOf())
@@ -32,9 +32,9 @@ class NotesViewModel(private val firebaseDatabase: FirebaseDatabase) : ViewModel
     fun getNotes(subjectId: String) {
         viewModelScope.launch {
             firebaseDatabase.flowNotes(subjectId).collect {
-                _notes.value = it.map { response ->
+                _notes.emit(it.map { response ->
                     return@map response.toNote()
-                }
+                })
             }
         }
     }
